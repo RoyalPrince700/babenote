@@ -9,6 +9,7 @@ import {
   DREAM_WARM_LINES,
 } from './data'
 import { playDreamChime, playDreamSparkle, signalDreamMusic } from './dreamAudio'
+import MmIcon from './icons'
 import { EASE } from './motion'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
 
@@ -20,53 +21,94 @@ function pick(list, avoid) {
   return item
 }
 
-function HeartOrb({ exiting }) {
+function HeartOrb({ reduced }) {
   return (
     <motion.div
       className="mm-dream__orb"
       animate={
-        exiting
-          ? { scale: 0.2, opacity: 0, filter: 'blur(12px)' }
-          : { rotate: 360, scale: [1, 1.05, 1] }
+        reduced
+          ? { opacity: 1, scale: 1 }
+          : { rotate: 360, scale: [1, 1.06, 1] }
       }
       transition={
-        exiting
-          ? { duration: 1.1, ease: EASE }
+        reduced
+          ? { duration: 0.4 }
           : {
-              rotate: { duration: 28, repeat: Infinity, ease: 'linear' },
-              scale: { duration: 4.2, repeat: Infinity, ease: 'easeInOut' },
+              rotate: { duration: 32, repeat: Infinity, ease: 'linear' },
+              scale: { duration: 4.6, repeat: Infinity, ease: 'easeInOut' },
             }
       }
       aria-hidden="true"
     >
-      <span className="mm-dream__orb-core">❤️</span>
+      <span className="mm-dream__orb-core">
+        <MmIcon name="heart" size={36} filled />
+      </span>
       <span className="mm-dream__orb-ring" />
       <span className="mm-dream__orb-ring mm-dream__orb-ring--2" />
     </motion.div>
   )
 }
 
-function NicknameBubble({ bubble, index, total, reduced, onPop }) {
-  const [phase, setPhase] = useState('float') // float | pop | gone | reform
+function BurstParticles({ id, reduced }) {
+  const bits = useMemo(
+    () =>
+      Array.from({ length: reduced ? 5 : 10 }, (_, i) => {
+        const angle = (i / 10) * Math.PI * 2 + Math.random() * 0.4
+        const dist = 36 + Math.random() * 52
+        return {
+          id: `${id}-${i}`,
+          x: Math.cos(angle) * dist,
+          y: Math.sin(angle) * dist,
+          size: 6 + Math.random() * 10,
+          delay: i * 0.02,
+        }
+      }),
+    [id, reduced],
+  )
+
+  return (
+    <span className="mm-dream__burst" aria-hidden="true">
+      {bits.map((b) => (
+        <motion.span
+          key={b.id}
+          className="mm-dream__burst-bit"
+          style={{ width: b.size, height: b.size }}
+          initial={{ opacity: 0.95, scale: 1, x: 0, y: 0 }}
+          animate={{ opacity: 0, scale: 0.2, x: b.x, y: b.y }}
+          transition={{ duration: 0.7, delay: b.delay, ease: 'easeOut' }}
+        />
+      ))}
+    </span>
+  )
+}
+
+function NicknameBubble({ bubble, index, total, reduced, onPop, wide }) {
+  const [phase, setPhase] = useState('float')
   const [message, setMessage] = useState('')
-  const angle = (index / total) * Math.PI * 2
-  const radius = 118 + (index % 3) * 28
-  const duration = 14 + (index % 5) * 2.4
-  const drift = 10 + (index % 4) * 6
+  const [burstKey, setBurstKey] = useState(0)
+  const rings = wide ? 5 : 3
+  const angle = (index / total) * Math.PI * 2 - Math.PI / 2 + (index % rings) * 0.12
+  const base = wide ? 130 : 88
+  const step = wide ? 42 : 24
+  const radius = base + (index % rings) * step
+  const duration = 10 + (index % 5) * 1.8
+  const driftX = (wide ? 22 : 12) + (index % 4) * 5
+  const driftY = (wide ? 26 : 16) + (index % 3) * 7
 
   const handleClick = async () => {
     if (phase !== 'float') return
     setMessage(pick(DREAM_POP_MESSAGES))
+    setBurstKey((k) => k + 1)
     setPhase('pop')
     await playDreamChime()
     onPop?.()
-    window.setTimeout(() => setPhase('gone'), 900)
-    window.setTimeout(() => setPhase('reform'), 1600)
-    window.setTimeout(() => setPhase('float'), 2400)
+    window.setTimeout(() => setPhase('gone'), 750)
+    window.setTimeout(() => setPhase('reform'), 1400)
+    window.setTimeout(() => setPhase('float'), 2100)
   }
 
   const x = Math.cos(angle) * radius
-  const y = Math.sin(angle) * radius * 0.78
+  const y = Math.sin(angle) * radius * 0.82
 
   return (
     <motion.button
@@ -83,44 +125,64 @@ function NicknameBubble({ bubble, index, total, reduced, onPop }) {
       }}
       onClick={handleClick}
       aria-label={`Open love note: ${bubble.label}`}
-      initial={{ opacity: 0, scale: 0.6, x, y }}
+      initial={{ opacity: 0, scale: 0.55, x, y }}
       animate={
         phase === 'pop'
-          ? { scale: 1.35, opacity: 0, x, y }
+          ? { scale: [1, 1.2, 0.15], opacity: [1, 1, 0], x, y }
           : phase === 'gone'
             ? { scale: 0, opacity: 0, x, y }
             : phase === 'reform'
-              ? { scale: 0.85, opacity: 0.7, x, y }
+              ? { scale: 0.7, opacity: 0.55, x, y }
               : reduced
                 ? { opacity: 1, scale: 1, x, y }
                 : {
                     opacity: 1,
-                    scale: [1, 1.04, 0.98, 1],
-                    x: [x, x + drift, x - drift * 0.6, x],
-                    y: [y, y - drift * 0.8, y + drift * 0.5, y],
+                    scale: [1, 1.05, 0.97, 1.02, 1],
+                    x: [x, x + driftX, x - driftX * 0.7, x + driftX * 0.35, x],
+                    y: [y, y - driftY, y + driftY * 0.55, y - driftY * 0.35, y],
                   }
       }
       transition={
         phase === 'float' && !reduced
           ? {
-              x: { duration, repeat: Infinity, ease: 'easeInOut', delay: index * 0.2 },
-              y: { duration: duration * 1.1, repeat: Infinity, ease: 'easeInOut', delay: index * 0.15 },
-              scale: { duration: 5 + index * 0.3, repeat: Infinity, ease: 'easeInOut' },
-              opacity: { duration: 0.6 },
+              x: {
+                duration,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: index * 0.18,
+              },
+              y: {
+                duration: duration * 1.15,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: index * 0.12,
+              },
+              scale: {
+                duration: 4.5 + (index % 4) * 0.4,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              },
+              opacity: { duration: 0.55 },
             }
-          : { type: 'spring', stiffness: 180, damping: 16 }
+          : phase === 'pop'
+            ? { duration: 0.55, ease: [0.2, 0.8, 0.2, 1] }
+            : { type: 'spring', stiffness: 200, damping: 16 }
       }
     >
+      <span className="mm-dream__bubble-shine" aria-hidden="true" />
       <span className="mm-dream__bubble-heart" aria-hidden="true">
-        ❤️
+        <MmIcon name="heart" size={12} filled />
       </span>
       <span className="mm-dream__bubble-label">{bubble.label}</span>
+
+      {phase === 'pop' && <BurstParticles id={burstKey} reduced={reduced} />}
+
       <AnimatePresence>
         {phase === 'pop' && message && (
           <motion.span
             className="mm-dream__bubble-toast"
-            initial={{ opacity: 0, y: 8, scale: 0.9 }}
-            animate={{ opacity: 1, y: -36, scale: 1 }}
+            initial={{ opacity: 0, y: 6, scale: 0.9 }}
+            animate={{ opacity: 1, y: -42, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.55, ease: EASE }}
           >
@@ -132,78 +194,170 @@ function NicknameBubble({ bubble, index, total, reduced, onPop }) {
   )
 }
 
+function pickSpinnerPrize() {
+  const lomlIndex = DREAM_SPINNER_PRIZES.findIndex((p) => p.id === 'loml')
+  // 8 out of 10 spins land on Send me LOML
+  if (lomlIndex >= 0 && Math.random() < 0.8) return lomlIndex
+  const others = DREAM_SPINNER_PRIZES.map((_, i) => i).filter((i) => i !== lomlIndex)
+  return others[Math.floor(Math.random() * others.length)]
+}
+
+function SpinSparks({ active }) {
+  const sparks = useMemo(
+    () =>
+      Array.from({ length: 12 }, (_, i) => ({
+        id: i,
+        angle: (i / 12) * 360,
+        delay: (i % 6) * 0.08,
+        dist: 52 + (i % 4) * 10,
+      })),
+    [],
+  )
+
+  if (!active) return null
+
+  return (
+    <div className="mm-dream__spin-sparks" aria-hidden="true">
+      {sparks.map((s) => (
+        <motion.span
+          key={s.id}
+          className="mm-dream__spin-spark"
+          style={{ '--spark-angle': `${s.angle}deg` }}
+          animate={{
+            opacity: [0, 1, 0],
+            scale: [0.4, 1.2, 0.3],
+            x: [0, Math.cos((s.angle * Math.PI) / 180) * s.dist],
+            y: [0, Math.sin((s.angle * Math.PI) / 180) * s.dist],
+          }}
+          transition={{
+            duration: 0.9,
+            delay: s.delay,
+            repeat: Infinity,
+            ease: 'easeOut',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
 function LoveSpinner({ reduced }) {
   const [spinning, setSpinning] = useState(false)
   const [rotation, setRotation] = useState(0)
   const [prize, setPrize] = useState(null)
+  const [flash, setFlash] = useState(false)
   const count = DREAM_SPINNER_PRIZES.length
   const slice = 360 / count
 
   const spin = async () => {
     if (spinning) return
     setPrize(null)
+    setFlash(false)
     setSpinning(true)
     await playDreamSparkle()
-    const index = Math.floor(Math.random() * count)
-    const turns = 4 + Math.floor(Math.random() * 3)
-    // Pointer at top; prize center should land under pointer
+    const index = pickSpinnerPrize()
+    const turns = 5 + Math.floor(Math.random() * 3)
     const target = turns * 360 + (360 - index * slice - slice / 2)
     setRotation((prev) => prev + target - (prev % 360))
     window.setTimeout(() => {
-      setPrize(DREAM_SPINNER_PRIZES[index])
+      const won = DREAM_SPINNER_PRIZES[index]
+      setPrize(won)
       setSpinning(false)
+      setFlash(true)
       playDreamChime()
-    }, 4200)
+      if (won.id === 'loml' && navigator.vibrate) navigator.vibrate([18, 40, 18])
+      window.setTimeout(() => setFlash(false), 1200)
+    }, 4800)
   }
 
   return (
-    <div className="mm-dream__spinner">
+    <div className={`mm-dream__spinner ${spinning ? 'is-spinning' : ''} ${flash ? 'is-flash' : ''}`}>
       <p className="mm-dream__spinner-title">A little surprise for you</p>
       <div className="mm-dream__compass">
-        <div className="mm-dream__compass-pointer" aria-hidden="true">
-          ♥
-        </div>
+        <motion.div
+          className="mm-dream__compass-pointer"
+          aria-hidden="true"
+          animate={
+            spinning
+              ? { y: [0, -3, 0], scale: [1, 1.15, 1], rotate: [0, -8, 8, 0] }
+              : { y: 0, scale: 1, rotate: 0 }
+          }
+          transition={
+            spinning
+              ? { duration: 0.35, repeat: Infinity, ease: 'easeInOut' }
+              : { duration: 0.3 }
+          }
+        >
+          <MmIcon name="heart" size={16} filled />
+        </motion.div>
+        <SpinSparks active={spinning && !reduced} />
+        <motion.div
+          className="mm-dream__compass-glow"
+          aria-hidden="true"
+          animate={
+            spinning
+              ? { opacity: [0.35, 0.85, 0.35], scale: [1, 1.08, 1] }
+              : flash
+                ? { opacity: [0, 1, 0.4], scale: [0.9, 1.12, 1] }
+                : { opacity: 0.25, scale: 1 }
+          }
+          transition={
+            spinning
+              ? { duration: 0.7, repeat: Infinity, ease: 'easeInOut' }
+              : { duration: 0.9, ease: EASE }
+          }
+        />
         <motion.div
           className="mm-dream__compass-wheel"
           animate={{ rotate: rotation }}
-          transition={{ duration: spinning ? 4.2 : 0.4, ease: [0.15, 0.85, 0.2, 1] }}
+          transition={{
+            duration: spinning ? 4.8 : 0.4,
+            ease: spinning ? [0.12, 0.75, 0.08, 1] : 'easeOut',
+          }}
         >
           {DREAM_SPINNER_PRIZES.map((item, i) => (
             <div
               key={item.id}
-              className="mm-dream__compass-slice"
+              className={`mm-dream__compass-slice ${item.id === 'loml' ? 'is-loml' : ''}`}
               style={{ transform: `rotate(${i * slice}deg)` }}
             >
               <span style={{ transform: `rotate(${slice / 2}deg)` }}>{item.label}</span>
             </div>
           ))}
         </motion.div>
-        <div className="mm-dream__compass-center" aria-hidden="true">
-          ❤️
-        </div>
+        <motion.div
+          className="mm-dream__compass-center"
+          aria-hidden="true"
+          animate={spinning && !reduced ? { scale: [1, 1.12, 1], rotate: [0, 12, -8, 0] } : { scale: 1 }}
+          transition={spinning ? { duration: 0.55, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.3 }}
+        >
+          <MmIcon name="heart" size={18} filled />
+        </motion.div>
       </div>
       <motion.button
         type="button"
         className="mm-dream__spin-btn"
         onClick={spin}
         disabled={spinning}
-        whileHover={reduced ? undefined : { scale: 1.04 }}
+        whileHover={reduced || spinning ? undefined : { scale: 1.04 }}
         whileTap={{ scale: 0.97 }}
+        animate={spinning ? { scale: [1, 0.97, 1] } : { scale: 1 }}
+        transition={spinning ? { duration: 0.6, repeat: Infinity } : { duration: 0.2 }}
       >
-        Spin ❤️
+        {spinning ? 'Spinning…' : 'Spin'} <MmIcon name="heart" size={16} filled />
       </motion.button>
       <AnimatePresence mode="wait">
         {prize && (
           <motion.div
             key={prize.id}
-            className="mm-dream__prize"
-            initial={{ opacity: 0, y: 12, scale: 0.94 }}
+            className={`mm-dream__prize ${prize.id === 'loml' ? 'mm-dream__prize--loml' : ''}`}
+            initial={{ opacity: 0, y: 16, scale: 0.88 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.55, ease: EASE }}
+            transition={{ type: 'spring', stiffness: 220, damping: 16 }}
           >
             <span className="mm-dream__prize-burst" aria-hidden="true">
-              ✨
+              <MmIcon name="sparkles" size={20} />
             </span>
             <strong>{prize.label}</strong>
             <p>{prize.note}</p>
@@ -338,7 +492,7 @@ function SecretHearts({ reduced }) {
           transition={{ duration: 3.5 + h.delay, repeat: Infinity, ease: 'easeInOut', delay: h.delay }}
           aria-label="Secret heart"
         >
-          ♥
+          <MmIcon name="heart" size={14} filled />
           <AnimatePresence>
             {open === h.id && (
               <motion.span
@@ -392,7 +546,7 @@ function WarmMessages({ active }) {
 function Particles({ reduced }) {
   const dots = useMemo(
     () =>
-      Array.from({ length: reduced ? 8 : 22 }, (_, i) => ({
+      Array.from({ length: reduced ? 8 : 18 }, (_, i) => ({
         id: i,
         left: `${(i * 17) % 100}%`,
         size: 2 + (i % 4),
@@ -419,112 +573,104 @@ function Particles({ reduced }) {
   )
 }
 
+function DreamSky({ reduced }) {
+  return (
+    <>
+      <div className="mm-dream__sky" aria-hidden="true" />
+      <Particles reduced={reduced} />
+    </>
+  )
+}
+
+const MOBILE_BUBBLE_COUNT = 10
+
 export default function MagicalWorld({ chapter }) {
   const reduced = usePrefersReducedMotion()
-  const sectionRef = useRef(null)
-  const pinRef = useRef(null)
-  const inView = useInView(sectionRef, { amount: 0.25 })
-  const deeplyInView = useInView(pinRef, { amount: 0.55 })
-  const [snapped, setSnapped] = useState(false)
-  const [exiting, setExiting] = useState(false)
-  const [showExitLine, setShowExitLine] = useState(0)
-  const wasDeep = useRef(false)
+  const [wide, setWide] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(min-width: 900px)').matches : false,
+  )
+  const seeRef = useRef(null)
+  const spinRef = useRef(null)
+  const seeInView = useInView(seeRef, { amount: 0.4 })
+  const spinInView = useInView(spinRef, { amount: 0.35 })
+  const musicActive = seeInView || spinInView
 
   useEffect(() => {
-    signalDreamMusic(deeplyInView)
+    const mq = window.matchMedia('(min-width: 900px)')
+    const update = () => setWide(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    signalDreamMusic(musicActive)
     return () => signalDreamMusic(false)
-  }, [deeplyInView])
+  }, [musicActive])
 
-  useEffect(() => {
-    if (!inView || snapped || !sectionRef.current) return undefined
-    const t = window.setTimeout(() => {
-      sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      setSnapped(true)
-    }, 180)
-    return () => window.clearTimeout(t)
-  }, [inView, snapped])
-
-  useEffect(() => {
-    if (deeplyInView) {
-      wasDeep.current = true
-      setExiting(false)
-      setShowExitLine(0)
-      return undefined
-    }
-    if (!wasDeep.current) return undefined
-    setExiting(true)
-    const a = window.setTimeout(() => setShowExitLine(1), 400)
-    const b = window.setTimeout(() => setShowExitLine(2), 1800)
-    return () => {
-      window.clearTimeout(a)
-      window.clearTimeout(b)
-    }
-  }, [deeplyInView])
+  const bubbles = useMemo(
+    () => (wide ? DREAM_BUBBLES : DREAM_BUBBLES.slice(0, MOBILE_BUBBLE_COUNT)),
+    [wide],
+  )
 
   const onBubblePop = useCallback(() => {
     if (navigator.vibrate) navigator.vibrate(12)
   }, [])
 
   return (
-    <section ref={sectionRef} className="mm-dream" id="how-i-see-you">
-      <div className="mm-dream__sticky">
-        <div ref={pinRef} className={`mm-dream__world ${exiting ? 'mm-dream__world--exit' : ''}`}>
-          <div className="mm-dream__sky" aria-hidden="true" />
-          <Particles reduced={reduced} />
-          <DriftNotes active={deeplyInView} reduced={reduced} />
-          <SecretHearts reduced={reduced} />
+    <>
+      <section ref={seeRef} className="mm-dream mm-dream--see" id="how-i-see-you">
+        <DreamSky reduced={reduced} />
+        <DriftNotes active={seeInView} reduced={reduced} />
+        <SecretHearts reduced={reduced} />
 
+        <div className="mm-dream__panel">
           <div className="mm-dream__header">
             <span className="mm-dream__badge">
-              {chapter.emoji} {chapter.label}
+              <MmIcon name={chapter.icon || 'sparkles'} size={14} /> {chapter.label}
             </span>
-            <h2 className="mm-dream__title">A little world, just for you</h2>
-            <p className="mm-dream__hint">Tap the bubbles. Spin the heart. Stay as long as you want.</p>
+            <h2 className="mm-dream__title">A little world for Mama</h2>
+            <p className="mm-dream__hint">Tap a floating circle — watch it burst into bubbles.</p>
           </div>
 
-          <div className="mm-dream__stage">
-            <HeartOrb exiting={exiting && !deeplyInView} />
+          <div className={`mm-dream__stage ${wide ? 'mm-dream__stage--wide' : ''}`}>
+            <HeartOrb reduced={reduced} />
             <div className="mm-dream__orbit">
-              {DREAM_BUBBLES.map((bubble, i) => (
+              {bubbles.map((bubble, i) => (
                 <NicknameBubble
                   key={bubble.id}
                   bubble={bubble}
                   index={i}
-                  total={DREAM_BUBBLES.length}
+                  total={bubbles.length}
                   reduced={reduced}
                   onPop={onBubblePop}
+                  wide={wide}
                 />
               ))}
             </div>
           </div>
 
-          <WarmMessages active={deeplyInView} />
-          <AffectionMeter active={deeplyInView} reduced={reduced} />
-          <LoveSpinner reduced={reduced} />
-
-          <AnimatePresence>
-            {showExitLine > 0 && !deeplyInView && (
-              <motion.div
-                className="mm-dream__farewell"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                {showExitLine >= 1 && <p>My favorite place...</p>}
-                {showExitLine >= 2 && (
-                  <motion.p
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: EASE }}
-                  >
-                    ...has always been beside you.
-                  </motion.p>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <WarmMessages active={seeInView} />
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section ref={spinRef} className="mm-dream mm-dream--spin" id="love-spinner">
+        <DreamSky reduced={reduced} />
+        <DriftNotes active={spinInView} reduced={reduced} />
+
+        <div className="mm-dream__panel">
+          <div className="mm-dream__header">
+            <span className="mm-dream__badge">
+              <MmIcon name="heart" size={14} filled /> Surprise spin
+            </span>
+            <h2 className="mm-dream__title">Spin for a little gift</h2>
+            <p className="mm-dream__hint">One spin. One soft promise. Just for you.</p>
+          </div>
+
+          <AffectionMeter active={spinInView} reduced={reduced} />
+          <LoveSpinner reduced={reduced} />
+        </div>
+      </section>
+    </>
   )
 }

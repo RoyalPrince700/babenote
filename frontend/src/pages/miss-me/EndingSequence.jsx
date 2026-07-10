@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Heart } from 'lucide-react'
 import { ENDING_LINES } from './data'
+import MmIcon from './icons'
 import { EASE } from './motion'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
 
@@ -59,7 +59,7 @@ export default function EndingSequence({ onHug }) {
             animate={{ opacity: 1, scale: [1, 1.08, 1] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
           >
-            ❤️
+            <MmIcon name="heart" size={52} filled />
           </motion.div>
         )}
 
@@ -78,7 +78,7 @@ export default function EndingSequence({ onHug }) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
             >
-              <Heart size={18} fill="currentColor" />
+              <MmIcon name="heart" size={18} filled />
               Hug Me Soon
             </motion.button>
           </motion.div>

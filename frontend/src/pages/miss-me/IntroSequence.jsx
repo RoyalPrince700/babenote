@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { INTRO_LINES } from './data'
+import MmIcon from './icons'
 import { EASE } from './motion'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
 
@@ -17,7 +18,6 @@ export default function IntroSequence({ onComplete }) {
   }, [])
 
   useEffect(() => {
-    // Still show intro on reduced-motion — just faster (common on iPhones).
     const speed = reduced ? 0.55 : 1
 
     if (index >= INTRO_LINES.length) {
@@ -64,7 +64,7 @@ export default function IntroSequence({ onComplete }) {
                 }
                 transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
               >
-                ❤️
+                <MmIcon name="heart" size={48} filled />
               </motion.span>
             ) : (
               <p className="mm-intro__text">{current.text}</p>

@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
+import MmIcon from './icons'
 import { EASE, viewportOnce } from './motion'
 
-export default function TimelineItem({ emoji, label, active = false }) {
+export default function TimelineItem({ icon = 'heart', label, active = false }) {
   return (
     <motion.div
       className={`mm-timeline ${active ? 'mm-timeline--active' : ''}`}
@@ -11,7 +12,7 @@ export default function TimelineItem({ emoji, label, active = false }) {
       transition={{ duration: 0.55, ease: EASE }}
     >
       <span className="mm-timeline__dot" aria-hidden="true">
-        {emoji}
+        <MmIcon name={icon} size={14} filled={icon === 'heart'} />
       </span>
       <span className="mm-timeline__label">{label}</span>
     </motion.div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { LOVE_NOTES } from './data'
+import MmIcon from './icons'
 import { EASE } from './motion'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
 
@@ -47,7 +48,7 @@ export default function LoveNotes({ active = true }) {
             exit={{ opacity: 0, y: -10, scale: 0.96 }}
             transition={{ duration: 0.7, ease: EASE }}
           >
-            <span>❤️</span> {note.text}
+            <MmIcon name="heart" size={12} filled /> {note.text}
           </motion.div>
         )}
       </AnimatePresence>

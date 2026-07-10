@@ -1,143 +1,76 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import songUrl from '../../assets/dotti-forever.mp3'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
-
-/** Soft ambient pad via Web Audio — no external file required. */
-function createRomanticPad(ctx) {
-  const master = ctx.createGain()
-  master.gain.value = 0.0001
-  master.connect(ctx.destination)
-
-  const notes = [196, 246.94, 293.66, 329.63] // G3 A3 D4 E4 — gentle open voicing
-  const voices = notes.map((freq, i) => {
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    const filter = ctx.createBiquadFilter()
-    osc.type = i % 2 === 0 ? 'sine' : 'triangle'
-    osc.frequency.value = freq
-    filter.type = 'lowpass'
-    filter.frequency.value = 680
-    gain.gain.value = 0.045 - i * 0.006
-    osc.connect(filter)
-    filter.connect(gain)
-    gain.connect(master)
-    osc.start()
-    return { osc, gain, filter }
-  })
-
-  // Extra shimmer voices (quiet until dream enrich)
-  const shimmer = [392, 493.88].map((freq, i) => {
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.type = 'sine'
-    osc.frequency.value = freq
-    gain.gain.value = 0.0001
-    osc.connect(gain)
-    gain.connect(master)
-    osc.start()
-    return { osc, gain }
-  })
-
-  const lfo = ctx.createOscillator()
-  const lfoGain = ctx.createGain()
-  lfo.frequency.value = 0.08
-  lfoGain.gain.value = 0.012
-  lfo.connect(lfoGain)
-  lfoGain.connect(master.gain)
-  lfo.start()
-
-  return {
-    master,
-    stop() {
-      const now = ctx.currentTime
-      master.gain.cancelScheduledValues(now)
-      master.gain.setValueAtTime(master.gain.value, now)
-      master.gain.exponentialRampToValueAtTime(0.0001, now + 0.6)
-      window.setTimeout(() => {
-        ;[...voices, ...shimmer].forEach(({ osc }) => {
-          try {
-            osc.stop()
-          } catch {
-            /* already stopped */
-          }
-        })
-        try {
-          lfo.stop()
-        } catch {
-          /* already stopped */
-        }
-      }, 700)
-    },
-    fadeIn() {
-      const now = ctx.currentTime
-      master.gain.cancelScheduledValues(now)
-      master.gain.setValueAtTime(0.0001, now)
-      master.gain.exponentialRampToValueAtTime(0.22, now + 1.4)
-    },
-    fadeOut() {
-      const now = ctx.currentTime
-      master.gain.cancelScheduledValues(now)
-      master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), now)
-      master.gain.exponentialRampToValueAtTime(0.0001, now + 0.8)
-    },
-    enrich(on) {
-      const now = ctx.currentTime
-      voices.forEach(({ filter }) => {
-        filter.frequency.cancelScheduledValues(now)
-        filter.frequency.setValueAtTime(filter.frequency.value, now)
-        filter.frequency.exponentialRampToValueAtTime(on ? 1400 : 680, now + 1.2)
-      })
-      shimmer.forEach(({ gain }, i) => {
-        gain.gain.cancelScheduledValues(now)
-        gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.0001), now)
-        gain.gain.exponentialRampToValueAtTime(on ? 0.028 - i * 0.006 : 0.0001, now + 1.1)
-      })
-      if (on) {
-        master.gain.cancelScheduledValues(now)
-        master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), now)
-        master.gain.exponentialRampToValueAtTime(0.28, now + 1)
-      }
-    },
-  }
-}
 
 export default function MusicPlayer() {
   const reduced = usePrefersReducedMotion()
   const [on, setOn] = useState(false)
-  const ctxRef = useRef(null)
-  const padRef = useRef(null)
+  const audioRef = useRef(null)
+  const fadeRef = useRef(null)
 
   useEffect(() => {
+    const audio = new Audio(songUrl)
+    audio.loop = true
+    audio.preload = 'auto'
+    audio.volume = 0
+    audioRef.current = audio
+
     return () => {
-      padRef.current?.stop()
-      ctxRef.current?.close?.()
+      if (fadeRef.current) window.clearInterval(fadeRef.current)
+      audio.pause()
+      audio.src = ''
+      audioRef.current = null
     }
   }, [])
 
   useEffect(() => {
     const onDream = (e) => {
-      if (!padRef.current || !on) return
-      padRef.current.enrich(Boolean(e.detail?.active))
+      const audio = audioRef.current
+      if (!audio || !on) return
+      const richer = Boolean(e.detail?.active)
+      fadeVolume(audio, richer ? 0.55 : 0.42, 600)
     }
     window.addEventListener('mm-dream-music', onDream)
     return () => window.removeEventListener('mm-dream-music', onDream)
   }, [on])
 
+  const fadeVolume = (audio, target, ms = 700) => {
+    if (fadeRef.current) window.clearInterval(fadeRef.current)
+    const start = audio.volume
+    const steps = Math.max(8, Math.floor(ms / 40))
+    let i = 0
+    fadeRef.current = window.setInterval(() => {
+      i += 1
+      const t = i / steps
+      audio.volume = Math.min(1, Math.max(0, start + (target - start) * t))
+      if (i >= steps) {
+        window.clearInterval(fadeRef.current)
+        fadeRef.current = null
+        if (target <= 0.001) {
+          audio.pause()
+          audio.currentTime = 0
+        }
+      }
+    }, 40)
+  }
+
   const toggle = async () => {
     if (reduced) return
+    const audio = audioRef.current
+    if (!audio) return
 
     if (!on) {
-      const Ctx = window.AudioContext || window.webkitAudioContext
-      if (!Ctx) return
-      if (!ctxRef.current) ctxRef.current = new Ctx()
-      if (ctxRef.current.state === 'suspended') await ctxRef.current.resume()
-      padRef.current?.stop()
-      padRef.current = createRomanticPad(ctxRef.current)
-      padRef.current.fadeIn()
-      setOn(true)
+      try {
+        audio.volume = 0
+        await audio.play()
+        fadeVolume(audio, 0.42, 900)
+        setOn(true)
+      } catch {
+        /* autoplay blocked — user can tap again */
+      }
     } else {
-      padRef.current?.fadeOut()
-      window.setTimeout(() => padRef.current?.stop(), 850)
+      fadeVolume(audio, 0, 600)
       setOn(false)
     }
   }
@@ -150,7 +83,7 @@ export default function MusicPlayer() {
       className={`mm-music ${on ? 'mm-music--on' : ''}`}
       onClick={toggle}
       aria-pressed={on}
-      aria-label={on ? 'Mute music' : 'Play soft music'}
+      aria-label={on ? 'Mute music' : 'Play Forever Sweet'}
       whileTap={{ scale: 0.94 }}
     >
       <span className="mm-music__bars" aria-hidden="true">

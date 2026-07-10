@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import MmIcon from './icons'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
 
 export default function HeartTrail({ active = true }) {
@@ -46,7 +47,7 @@ export default function HeartTrail({ active = true }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.65 }}
           >
-            ♥
+            <MmIcon name="heart" size={12} filled />
           </motion.span>
         ))}
       </AnimatePresence>

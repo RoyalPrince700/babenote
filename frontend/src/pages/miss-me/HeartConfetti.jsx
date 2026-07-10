@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import MmIcon from './icons'
 import { EASE } from './motion'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
 
@@ -14,7 +15,7 @@ function makePieces(count) {
       rotate: -40 + Math.random() * 80,
       size: 10 + Math.random() * 14,
       delay: Math.random() * 0.12,
-      char: i % 3 === 0 ? '✨' : '♥',
+      icon: i % 3 === 0 ? 'sparkles' : 'heart',
     }
   })
 }
@@ -57,12 +58,11 @@ export default function HeartConfetti({ active, onDone }) {
             <motion.span
               key={`${runId.current}-${p.id}`}
               className="mm-confetti__piece"
-              style={{ fontSize: p.size }}
               initial={{ opacity: 1, x: 0, y: 0, scale: 0.4, rotate: 0 }}
               animate={{ opacity: 0, x: p.x, y: p.y, scale: 1, rotate: p.rotate }}
               transition={{ duration: 1.15, delay: p.delay, ease: EASE }}
             >
-              {p.char}
+              <MmIcon name={p.icon} size={p.size} filled={p.icon === 'heart'} />
             </motion.span>
           ))}
         </motion.div>

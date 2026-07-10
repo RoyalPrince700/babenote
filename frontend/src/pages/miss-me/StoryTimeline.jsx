@@ -1,36 +1,35 @@
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import AmbientBackground from './AmbientBackground'
 import EndingSequence from './EndingSequence'
 import FloatingHearts from './FloatingHearts'
 import LoveNotes from './LoveNotes'
 import MagicalWorld from './MagicalWorld'
-import MemoryCard from './MemoryCard'
 import TimelineItem from './TimelineItem'
 import { CHAPTERS } from './data'
-import { EASE, fadeUp, stageTransition, viewportOnce } from './motion'
+import { EASE, fadeUp, stageTransition } from './motion'
 import { StaggerText } from './GlassCard'
-
-function BridgeChapter({ lines }) {
-  return (
-    <section className="mm-chapter mm-chapter--bridge">
-      <div className="mm-chapter__inner">
-        {lines.map((line, i) => (
-          <motion.p
-            key={i}
-            className="mm-bridge__line"
-            initial={{ opacity: 0, y: 24, filter: 'blur(6px)' }}
-            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            viewport={viewportOnce}
-            transition={{ duration: 0.8, delay: i * 0.35, ease: EASE }}
-          >
-            {line}
-          </motion.p>
-        ))}
-      </div>
-    </section>
-  )
-}
+import { playDreamChime } from './dreamAudio'
+import {
+  GiantNameSection,
+  SausieStorySection,
+  PhotoHoldSection,
+  HugMeterSection,
+  SnuggleModeSection,
+} from './sections/CoreSections'
+import {
+  NotificationsSection,
+  LoveChemistrySection,
+  MemoryStarsSection,
+  HeartbeatSection,
+  OpenHeartSection,
+  ComplimentRainSection,
+  ConstellationSection,
+  PhotoMosaicSection,
+  FutureSection,
+} from './sections/PlaySections'
+import './experience.css'
 
 function HeroChapter({ chapter }) {
   return (
@@ -43,7 +42,7 @@ function HeroChapter({ chapter }) {
         >
           <ChevronDown size={22} />
         </motion.div>
-        <TimelineItem emoji={chapter.emoji} label={chapter.label} active />
+        <TimelineItem icon={chapter.icon} label={chapter.label} active />
         <motion.h1
           className="mm-story__title"
           initial={{ opacity: 0, y: 24 }}
@@ -58,36 +57,64 @@ function HeroChapter({ chapter }) {
   )
 }
 
-function MemoryChapter({ chapter }) {
-  return (
-    <section className="mm-chapter mm-chapter--memory">
-      <div className="mm-chapter__inner">
-        <TimelineItem emoji={chapter.emoji} label={chapter.label} />
-        <motion.h2
-          className="mm-story__heading"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={viewportOnce}
-          transition={{ duration: 0.7, ease: EASE }}
-        >
-          {chapter.title}
-        </motion.h2>
-        <MemoryCard
-          photo={chapter.photo}
-          photoAlt={chapter.photoAlt}
-          caption={chapter.caption}
-          frame={chapter.frame}
-          body={chapter.body}
-          lead={chapter.lead}
-          items={chapter.items}
-          emphasis={chapter.emphasis}
-        />
-      </div>
-    </section>
-  )
+function renderChapter(chapter) {
+  switch (chapter.kind) {
+    case 'hero':
+      return <HeroChapter key={chapter.id} chapter={chapter} />
+    case 'giant-name':
+      return <GiantNameSection key={chapter.id} chapter={chapter} />
+    case 'sausie-story':
+      return <SausieStorySection key={chapter.id} />
+    case 'photo-hold':
+      return <PhotoHoldSection key={chapter.id} chapter={chapter} />
+    case 'dream':
+      return <MagicalWorld key={chapter.id} chapter={chapter} />
+    case 'hug-meter':
+      return <HugMeterSection key={chapter.id} />
+    case 'notifications':
+      return <NotificationsSection key={chapter.id} />
+    case 'snuggle-mode':
+      return <SnuggleModeSection key={chapter.id} />
+    case 'love-chemistry':
+      return <LoveChemistrySection key={chapter.id} />
+    case 'memory-stars':
+      return <MemoryStarsSection key={chapter.id} />
+    case 'heartbeat':
+      return <HeartbeatSection key={chapter.id} />
+    case 'open-heart':
+      return <OpenHeartSection key={chapter.id} />
+    case 'compliment-rain':
+      return <ComplimentRainSection key={chapter.id} />
+    case 'constellation':
+      return <ConstellationSection key={chapter.id} chapter={chapter} />
+    case 'photo-mosaic':
+      return <PhotoMosaicSection key={chapter.id} chapter={chapter} />
+    case 'future':
+      return <FutureSection key={chapter.id} />
+    default:
+      return null
+  }
 }
 
 export default function StoryTimeline({ onHug }) {
+  const [egg, setEgg] = useState('')
+
+  useEffect(() => {
+    const onKey = (e) => {
+      const k = e.key.toLowerCase()
+      if (k === 'm') {
+        setEgg('Mama — still my favorite word.')
+        playDreamChime()
+      } else if (k === 's') {
+        setEgg('Sausie & Snuggles — my whole vocabulary of love.')
+        playDreamChime()
+      } else return
+      window.setTimeout(() => setEgg(''), 2800)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   return (
     <motion.div
       className="mm-stage mm-story"
@@ -98,17 +125,25 @@ export default function StoryTimeline({ onHug }) {
       transition={stageTransition}
     >
       <AmbientBackground variant="story" />
-      <FloatingHearts count={10} className="mm-hearts--story" />
+      <FloatingHearts count={8} className="mm-hearts--story" />
       <LoveNotes active />
 
-      {CHAPTERS.map((chapter) => {
-        if (chapter.kind === 'hero') return <HeroChapter key={chapter.id} chapter={chapter} />
-        if (chapter.kind === 'bridge') return <BridgeChapter key={chapter.id} lines={chapter.lines} />
-        if (chapter.kind === 'dream') return <MagicalWorld key={chapter.id} chapter={chapter} />
-        return <MemoryChapter key={chapter.id} chapter={chapter} />
-      })}
+      {CHAPTERS.map((chapter) => renderChapter(chapter))}
 
       <EndingSequence onHug={onHug} />
+
+      <AnimatePresence>
+        {egg && (
+          <motion.div
+            className="xp-key-egg"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+          >
+            {egg}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

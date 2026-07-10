@@ -6,6 +6,7 @@ import IntroSequence from './miss-me/IntroSequence'
 import MusicPlayer from './miss-me/MusicPlayer'
 import QuestionGate from './miss-me/QuestionGate'
 import StoryTimeline from './miss-me/StoryTimeline'
+import MmIcon from './miss-me/icons'
 import './miss-me/miss-me.css'
 
 const STAGES = {
@@ -63,7 +64,7 @@ export default function DoYouMissMe() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
-            Soft hug sent. Come back soon ❤️
+            Soft hug sent. Come back soon <MmIcon name="heart" size={14} filled />
           </motion.div>
         )}
       </AnimatePresence>

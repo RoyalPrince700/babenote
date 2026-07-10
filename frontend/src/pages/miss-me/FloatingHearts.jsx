@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
+import MmIcon from './icons'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
 
 function makeHearts(count) {
@@ -25,11 +26,11 @@ export default function FloatingHearts({ count = 14, className = '' }) {
         <motion.span
           key={h.id}
           className="mm-hearts__item"
-          style={{ left: h.left, fontSize: h.size, opacity: h.opacity }}
+          style={{ left: h.left, opacity: h.opacity }}
           animate={{ y: [0, -120, -260], x: [0, 12, -8, 0], opacity: [0, h.opacity, 0] }}
           transition={{ duration: h.duration, delay: h.delay, repeat: Infinity, ease: 'easeInOut' }}
         >
-          ♥
+          <MmIcon name="heart" size={h.size} filled />
         </motion.span>
       ))}
     </div>

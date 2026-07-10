@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import GlassCard from './GlassCard'
 import { StaggerText } from './GlassCard'
+import MmIcon from './icons'
 import { EASE, viewportOnce } from './motion'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
 
@@ -92,7 +93,7 @@ export default function MemoryCard({
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.5, delay: i * 0.07, ease: EASE }}
             >
-              <span aria-hidden="true">✦</span>
+              <MmIcon name="sparkles" size={14} aria-hidden="true" />
               {item}
             </motion.li>
           ))}
