@@ -12,20 +12,15 @@ export const NICKNAMES = {
 }
 
 export const INTRO_LINES = [
-  { type: 'heart', duration: 1.8 },
+  { type: 'heart', duration: 2.4 },
   {
     type: 'text',
-    text: 'Put your earpiece on before you begin…',
-    duration: 3.2,
+    text: 'So you can enjoy every note…',
+    duration: 3.6,
   },
-  {
-    type: 'text',
-    text: 'So you can enjoy the music, Mama.',
-    duration: 2.8,
-  },
-  { type: 'text', text: 'I built something...', duration: 2.4 },
-  { type: 'text', text: "Because words weren't enough.", duration: 2.6 },
-  { type: 'text', text: 'So I made this for you, Mama.', duration: 2.8 },
+  { type: 'text', text: 'I built something...', duration: 3.2 },
+  { type: 'text', text: "Because words weren't enough.", duration: 3.4 },
+  { type: 'text', text: 'So I made this for you, Mama.', duration: 3.6 },
 ]
 
 export const LOVE_NOTES = [

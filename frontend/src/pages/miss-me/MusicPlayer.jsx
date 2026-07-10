@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import songUrl from '../../assets/dotti-forever.mp3'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
@@ -6,9 +7,14 @@ import usePrefersReducedMotion from './usePrefersReducedMotion'
 export default function MusicPlayer() {
   const reduced = usePrefersReducedMotion()
   const [on, setOn] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const audioRef = useRef(null)
   const fadeRef = useRef(null)
   const unlockedRef = useRef(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const fadeVolume = useCallback((audio, target, ms = 700) => {
     if (fadeRef.current) window.clearInterval(fadeRef.current)
@@ -56,13 +62,6 @@ export default function MusicPlayer() {
     audio.volume = 0
     audioRef.current = audio
 
-    // Try autoplay as soon as the page loads
-    const tryPlay = () => {
-      startFromBeginning().then((ok) => {
-        if (ok) cleanupGestures()
-      })
-    }
-
     const cleanupGestures = () => {
       window.removeEventListener('pointerdown', unlock)
       window.removeEventListener('touchstart', unlock)
@@ -70,9 +69,21 @@ export default function MusicPlayer() {
       window.removeEventListener('click', unlock)
     }
 
-    // Browsers often block autoplay — unlock on first user gesture
     const unlock = () => {
       if (unlockedRef.current) return
+      startFromBeginning().then((ok) => {
+        if (ok) cleanupGestures()
+      })
+    }
+
+    const onForcedStart = () => {
+      startFromBeginning().then((ok) => {
+        if (ok) cleanupGestures()
+      })
+    }
+
+    // Try autoplay (works on some desktops)
+    const tryPlay = () => {
       startFromBeginning().then((ok) => {
         if (ok) cleanupGestures()
       })
@@ -84,6 +95,7 @@ export default function MusicPlayer() {
       audio.addEventListener('canplaythrough', tryPlay, { once: true })
     }
 
+    window.addEventListener('mm-music-start', onForcedStart)
     window.addEventListener('pointerdown', unlock, { passive: true })
     window.addEventListener('touchstart', unlock, { passive: true })
     window.addEventListener('keydown', unlock)
@@ -91,6 +103,7 @@ export default function MusicPlayer() {
 
     return () => {
       cleanupGestures()
+      window.removeEventListener('mm-music-start', onForcedStart)
       audio.removeEventListener('canplaythrough', tryPlay)
       if (fadeRef.current) window.clearInterval(fadeRef.current)
       audio.pause()
@@ -113,12 +126,12 @@ export default function MusicPlayer() {
 
   const toggle = async (e) => {
     e?.stopPropagation?.()
+    e?.preventDefault?.()
     if (reduced) return
     const audio = audioRef.current
     if (!audio) return
 
     if (on && !audio.paused) {
-      // Stop / pause
       if (fadeRef.current) window.clearInterval(fadeRef.current)
       fadeRef.current = null
       audio.pause()
@@ -126,7 +139,6 @@ export default function MusicPlayer() {
       return
     }
 
-    // Play / resume
     try {
       if (audio.paused) {
         if (!unlockedRef.current) audio.currentTime = 0
@@ -141,32 +153,38 @@ export default function MusicPlayer() {
     }
   }
 
-  if (reduced) return null
+  if (reduced || !mounted) return null
 
-  return (
+  return createPortal(
     <motion.button
       type="button"
       className={`mm-music ${on ? 'mm-music--on' : ''}`}
       onClick={toggle}
       onPointerDown={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
       aria-pressed={on}
       aria-label={on ? 'Pause music' : 'Play music'}
       whileTap={{ scale: 0.94 }}
     >
-      <span className="mm-music__bars" aria-hidden="true">
-        {[0, 1, 2, 3].map((i) => (
-          <motion.span
-            key={i}
-            animate={on ? { scaleY: [0.35, 1, 0.45, 0.85, 0.35] } : { scaleY: 0.35 }}
-            transition={
-              on
-                ? { duration: 1.1 + i * 0.15, repeat: Infinity, ease: 'easeInOut', delay: i * 0.1 }
-                : { duration: 0.3 }
-            }
-          />
-        ))}
-      </span>
-      <span className="mm-music__label">{on ? 'Playing' : 'Music'}</span>
-    </motion.button>
+      {on ? (
+        <span className="mm-music__bars" aria-hidden="true">
+          {[0, 1, 2, 3].map((i) => (
+            <motion.span
+              key={i}
+              animate={{ scaleY: [0.35, 1, 0.45, 0.85, 0.35] }}
+              transition={{
+                duration: 1.1 + i * 0.15,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: i * 0.1,
+              }}
+            />
+          ))}
+        </span>
+      ) : (
+        <span className="mm-music__label">Start</span>
+      )}
+    </motion.button>,
+    document.body,
   )
 }
