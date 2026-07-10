@@ -10,6 +10,8 @@ import PlatformLayout from './layouts/PlatformLayout'
 // import Dashboard from './pages/Dashboard'
 // import PublicView from './pages/PublicView'
 import DoYouMissMe from './pages/DoYouMissMe'
+import StillForYou from './pages/StillForYou'
+import ChoosingYou from './pages/ChoosingYou'
 import './index.css'
 
 function App() {
@@ -17,18 +19,20 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route element={<PlatformLayout />}>
+          <Route path="/" element={<PlatformLayout />}>
             {/* Landing page = I Miss You */}
             <Route index element={<DoYouMissMe />} />
             <Route path="do-you-miss-me" element={<DoYouMissMe />} />
+            <Route path="still-for-you" element={<StillForYou />} />
+            <Route path="choosing-you" element={<ChoosingYou />} />
             {/* <Route path="login" element={<Login />} /> */}
             {/* <Route path="register" element={<Register />} /> */}
             {/* <Route path="templates" element={<Templates />} /> */}
             {/* <Route path="dashboard" element={<Dashboard />} /> */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
           {/* <Route path="customize/:slug" element={<Customize />} /> */}
           {/* <Route path="p/:shareId" element={<PublicView />} /> */}
-          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

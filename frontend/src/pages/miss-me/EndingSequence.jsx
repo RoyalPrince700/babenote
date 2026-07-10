@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ENDING_LINES } from './data'
 import MmIcon from './icons'
@@ -81,6 +82,13 @@ export default function EndingSequence({ onHug }) {
               <MmIcon name="heart" size={18} filled />
               Hug Me Soon
             </motion.button>
+
+            <div className="mm-ending__more">
+              <p className="mm-ending__more-label">There&apos;s still more for you…</p>
+              <Link to="/still-for-you" className="mm-ending__more-link">
+                Open chapter two <MmIcon name="heart" size={14} filled />
+              </Link>
+            </div>
           </motion.div>
         )}
       </div>
