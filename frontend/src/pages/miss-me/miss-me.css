@@ -89,6 +89,7 @@
   overflow: hidden;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
+  touch-action: manipulation;
 }
 
 .mm-intro__stage {
@@ -144,7 +145,6 @@
 
 body.mm-intro-lock {
   overflow: hidden !important;
-  touch-action: none;
 }
 
 /* ── Question ── */

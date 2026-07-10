@@ -183,13 +183,22 @@ export const COMPLIMENTS = [
   'Miss you endlessly',
 ]
 
-export const LOVE_LETTER = `My dearest Mama,
+export const LOVE_LETTER = `My love, my babe,
 
-If I could bottle the feeling of holding you — that Snuggles kind of warmth — I would carry it everywhere.
+Looking back now I can say youre one of the best things that has happened to me.
 
-You are my Sausie: the little joy that turns ordinary days into something I look forward to.
+Meeting you has made me know myself, and I am glad I am doing this love thing with you.
 
-I miss you. I choose you. I love you.
+It has been a long long long journey — so many ups and downs — but the ups are worth it. I love every part of you, my love.
+
+I miss you. I miss your gentleness. It is one of a kind. Your softness I love. I love how youre meek and dont stop being soft. I love how you love.
+
+Crying and smiling all in one person. My babe can cry, but its cute when you do it in my arms, when Im there. I love how you want issues to be settled and all.
+
+Thank you for taking care of me. I really appreciate you. I am happy to have you.
+
+I love love love you, Mama.
+My Snuggles. My Sausie.
 
 Always yours.`
 

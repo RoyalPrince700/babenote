@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import { unlockAndPlay } from './bgMusic'
 import { INTRO_LINES } from './data'
 import MmIcon from './icons'
 import { EASE } from './motion'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
-
-function requestMusicStart() {
-  window.dispatchEvent(new CustomEvent('mm-music-start'))
-}
 
 export default function IntroSequence({ onComplete }) {
   const reduced = usePrefersReducedMotion()
@@ -38,7 +35,8 @@ export default function IntroSequence({ onComplete }) {
 
   const begin = () => {
     if (started) return
-    requestMusicStart()
+    // Call play() in the same tap turn — required for iOS/Android.
+    void unlockAndPlay()
     setStarted(true)
   }
 
