@@ -4,6 +4,7 @@ import AmbientBackground from './AmbientBackground'
 import EndingSequence from './EndingSequence'
 import FloatingHearts from './FloatingHearts'
 import LoveNotes from './LoveNotes'
+import MagicalWorld from './MagicalWorld'
 import MemoryCard from './MemoryCard'
 import TimelineItem from './TimelineItem'
 import { CHAPTERS } from './data'
@@ -103,6 +104,7 @@ export default function StoryTimeline({ onHug }) {
       {CHAPTERS.map((chapter) => {
         if (chapter.kind === 'hero') return <HeroChapter key={chapter.id} chapter={chapter} />
         if (chapter.kind === 'bridge') return <BridgeChapter key={chapter.id} lines={chapter.lines} />
+        if (chapter.kind === 'dream') return <MagicalWorld key={chapter.id} chapter={chapter} />
         return <MemoryChapter key={chapter.id} chapter={chapter} />
       })}
 

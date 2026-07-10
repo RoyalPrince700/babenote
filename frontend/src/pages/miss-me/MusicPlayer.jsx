@@ -9,7 +9,7 @@ function createRomanticPad(ctx) {
   master.connect(ctx.destination)
 
   const notes = [196, 246.94, 293.66, 329.63] // G3 A3 D4 E4 — gentle open voicing
-  const oscillators = notes.map((freq, i) => {
+  const voices = notes.map((freq, i) => {
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     const filter = ctx.createBiquadFilter()
@@ -20,6 +20,19 @@ function createRomanticPad(ctx) {
     gain.gain.value = 0.045 - i * 0.006
     osc.connect(filter)
     filter.connect(gain)
+    gain.connect(master)
+    osc.start()
+    return { osc, gain, filter }
+  })
+
+  // Extra shimmer voices (quiet until dream enrich)
+  const shimmer = [392, 493.88].map((freq, i) => {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'sine'
+    osc.frequency.value = freq
+    gain.gain.value = 0.0001
+    osc.connect(gain)
     gain.connect(master)
     osc.start()
     return { osc, gain }
@@ -41,7 +54,7 @@ function createRomanticPad(ctx) {
       master.gain.setValueAtTime(master.gain.value, now)
       master.gain.exponentialRampToValueAtTime(0.0001, now + 0.6)
       window.setTimeout(() => {
-        oscillators.forEach(({ osc }) => {
+        ;[...voices, ...shimmer].forEach(({ osc }) => {
           try {
             osc.stop()
           } catch {
@@ -67,6 +80,24 @@ function createRomanticPad(ctx) {
       master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), now)
       master.gain.exponentialRampToValueAtTime(0.0001, now + 0.8)
     },
+    enrich(on) {
+      const now = ctx.currentTime
+      voices.forEach(({ filter }) => {
+        filter.frequency.cancelScheduledValues(now)
+        filter.frequency.setValueAtTime(filter.frequency.value, now)
+        filter.frequency.exponentialRampToValueAtTime(on ? 1400 : 680, now + 1.2)
+      })
+      shimmer.forEach(({ gain }, i) => {
+        gain.gain.cancelScheduledValues(now)
+        gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.0001), now)
+        gain.gain.exponentialRampToValueAtTime(on ? 0.028 - i * 0.006 : 0.0001, now + 1.1)
+      })
+      if (on) {
+        master.gain.cancelScheduledValues(now)
+        master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), now)
+        master.gain.exponentialRampToValueAtTime(0.28, now + 1)
+      }
+    },
   }
 }
 
@@ -82,6 +113,15 @@ export default function MusicPlayer() {
       ctxRef.current?.close?.()
     }
   }, [])
+
+  useEffect(() => {
+    const onDream = (e) => {
+      if (!padRef.current || !on) return
+      padRef.current.enrich(Boolean(e.detail?.active))
+    }
+    window.addEventListener('mm-dream-music', onDream)
+    return () => window.removeEventListener('mm-dream-music', onDream)
+  }, [on])
 
   const toggle = async () => {
     if (reduced) return

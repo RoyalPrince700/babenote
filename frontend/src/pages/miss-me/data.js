@@ -23,6 +23,74 @@ export const LOVE_NOTES = [
   'Always choosing you',
 ]
 
+export const DREAM_BUBBLES = [
+  { id: 'mama', label: 'Mama', size: 78 },
+  { id: 'sausie', label: 'My Sausie', size: 92 },
+  { id: 'snuggles', label: 'My Snuggles', size: 86 },
+  { id: 'safe', label: 'My Safe Place', size: 96 },
+  { id: 'human', label: 'My Favorite Human', size: 104 },
+  { id: 'peace', label: 'My Peace', size: 74 },
+  { id: 'home', label: 'My Home', size: 80 },
+  { id: 'happy', label: 'My Happiness', size: 90 },
+  { id: 'sun', label: 'My Sunshine', size: 84 },
+  { id: 'forever', label: 'My Forever', size: 88 },
+]
+
+export const DREAM_POP_MESSAGES = [
+  'You make ordinary days extraordinary.',
+  'I miss your hugs.',
+  'I still smile thinking about you.',
+  'You are my comfort.',
+  'You are the safest place my heart knows.',
+  'I hope you are smiling right now.',
+  'You make love feel easy.',
+  "I'd choose you again.",
+  'You feel like home.',
+  'My heart softens every time I think of you.',
+]
+
+export const DREAM_SPINNER_PRIZES = [
+  { id: 'kiss', label: 'Virtual Kiss', note: "I'm already looking forward to it." },
+  { id: 'hug', label: 'Biggest Hug', note: 'I owe you this.' },
+  { id: 'miss', label: "One Million I Miss You's", note: 'Redeemable anytime ❤️' },
+  { id: 'forehead', label: 'Forehead Kiss', note: 'Soft, slow, and all yours.' },
+  { id: 'cuddles', label: 'Endless Cuddles', note: 'No expiration date.' },
+  { id: 'movie', label: 'Movie Night Together', note: "I'll bring the snacks and the softest blanket." },
+  { id: 'icecream', label: 'Ice Cream Date', note: 'Your flavor. My treat.' },
+  { id: 'walk', label: 'Long Walk Holding Hands', note: 'Nowhere special — just us.' },
+  { id: 'sleep', label: 'Sleep In My Arms', note: 'The safest place I know.' },
+  { id: 'dance', label: 'Dance With Me', note: 'Even if the only music is us laughing.' },
+]
+
+export const DREAM_DRIFT_NOTES = [
+  'I adore you.',
+  'My Sausie.',
+  'My Snuggles.',
+  'Mama ❤️',
+  'You make my heart feel at home.',
+  'My favorite notification.',
+  "I'd still choose you.",
+  'My safe place.',
+  'The best part of my day.',
+  'I miss you.',
+]
+
+export const DREAM_SECRET_HEARTS = [
+  'I still remember this smile.',
+  "I can't wait to hug you again.",
+  'You are more beautiful than these photos.',
+  'I smile whenever I think of us.',
+  "You'll never know how grateful I am.",
+]
+
+export const DREAM_WARM_LINES = [
+  ['If home was a person...', 'It would be you.'],
+  ["I don't miss places.", 'I miss you.'],
+  ['You somehow became my favorite part of every day.'],
+  ['I wish this moment lasted a little longer.'],
+  ['Being yours feels like the softest kind of magic.'],
+]
+
 export const ENDING_LINES = [
   'The truth is...',
   'No picture...',
@@ -107,6 +175,12 @@ export const CHAPTERS = [
       'You make ordinary days feel like something worth remembering.',
       'With you, I never have to pretend. Soft, silly, serious — you love me through all of it.',
     ],
+  },
+  {
+    id: 'dream',
+    kind: 'dream',
+    emoji: '✨',
+    label: 'How I see you',
   },
   {
     id: 'choose',
