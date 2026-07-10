@@ -1,0 +1,211 @@
+.miss-me {
+  min-height: calc(100vh - 65px);
+  background: linear-gradient(160deg, #0f0a0c 0%, #1a1215 45%, #2a1520 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem 3rem;
+  overflow: hidden;
+}
+
+.miss-me-page {
+  width: 100%;
+  max-width: 620px;
+  text-align: center;
+  color: #f5e6eb;
+}
+
+.miss-me-page--question {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.miss-me-page__icon {
+  color: #e8a0b4;
+  margin-bottom: 1rem;
+}
+
+.miss-me-page__icon--pulse {
+  filter: drop-shadow(0 0 20px rgba(232, 160, 180, 0.5));
+}
+
+.miss-me-page__title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 600;
+  color: #faf0f3;
+  margin-bottom: 0.75rem;
+  line-height: 1.15;
+}
+
+.miss-me-page__subtitle {
+  color: rgba(245, 230, 235, 0.65);
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  max-width: 400px;
+}
+
+.miss-me-page__body {
+  color: rgba(245, 230, 235, 0.75);
+  line-height: 1.85;
+  font-size: 1.05rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.miss-me-page__body--highlight {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  color: #f4c4d4;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.miss-me-page__signature {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.5rem;
+  font-style: italic;
+  color: #e8a0b4;
+  margin-top: 1.5rem;
+}
+
+.miss-me-playground {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 220px;
+  margin: 0.5rem 0 1.5rem;
+  border-radius: 20px;
+  border: 1px dashed rgba(232, 160, 180, 0.2);
+  background: rgba(232, 160, 180, 0.04);
+  overflow: hidden;
+}
+
+.miss-me-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s, box-shadow 0.2s;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.miss-me-btn--yes {
+  background: linear-gradient(135deg, #e8a0b4, #c45c7a);
+  color: #fff;
+  box-shadow: 0 4px 24px rgba(196, 92, 122, 0.4);
+}
+
+.miss-me-btn--yes:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(196, 92, 122, 0.5);
+}
+
+.miss-me-btn--no {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(245, 230, 235, 0.7);
+  border: 1px solid rgba(232, 160, 180, 0.25);
+  z-index: 2;
+  transition: left 0.25s ease, top 0.25s ease;
+}
+
+.miss-me-btn--ghost {
+  background: transparent;
+  color: rgba(245, 230, 235, 0.7);
+  border: 1px solid rgba(232, 160, 180, 0.3);
+}
+
+.miss-me-btn--ghost:hover {
+  border-color: #e8a0b4;
+  color: #f4c4d4;
+}
+
+.miss-me-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.miss-me-actions--center {
+  margin-top: 0;
+}
+
+.miss-me-hint {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: rgba(245, 230, 235, 0.35);
+  font-style: italic;
+}
+
+.miss-me-dots {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.miss-me-dots__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(232, 160, 180, 0.25);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.miss-me-dots__dot--active {
+  background: #e8a0b4;
+  transform: scale(1.25);
+}
+
+.miss-me-list {
+  list-style: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.miss-me-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.15rem;
+  background: rgba(232, 160, 180, 0.06);
+  border: 1px solid rgba(232, 160, 180, 0.12);
+  border-radius: 12px;
+  color: rgba(245, 230, 235, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.miss-me-list li svg {
+  color: #e8a0b4;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+  .miss-me-playground {
+    height: 260px;
+  }
+
+  .miss-me-btn {
+    padding: 0.75rem 1.4rem;
+    font-size: 0.95rem;
+  }
+}

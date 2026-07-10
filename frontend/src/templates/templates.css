@@ -1,0 +1,217 @@
+/* Shared template theme tokens */
+.template {
+  min-height: 100vh;
+  font-family: var(--font-body, 'Outfit', system-ui, sans-serif);
+  color: var(--color-text);
+  background: var(--color-bg);
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Outfit', system-ui, sans-serif;
+}
+
+.template--dark {
+  --color-bg: #0f0a0c;
+  --color-bg-soft: #1a1215;
+  --color-bg-card: rgba(255, 220, 230, 0.04);
+  --color-rose: #e8a0b4;
+  --color-rose-light: #f4c4d4;
+  --color-rose-deep: #c45c7a;
+  --color-gold: #d4a574;
+  --color-cream: #faf0f3;
+  --color-text: #f5e6eb;
+  --color-text-muted: rgba(245, 230, 235, 0.65);
+  --shadow-glow: 0 0 60px rgba(232, 160, 180, 0.15);
+}
+
+.template--light {
+  --color-bg: #fdf8f9;
+  --color-bg-soft: #f5ecef;
+  --color-bg-card: rgba(196, 92, 122, 0.06);
+  --color-rose: #c45c7a;
+  --color-rose-light: #a8435f;
+  --color-rose-deep: #8f3450;
+  --color-gold: #a67c52;
+  --color-cream: #2d1f24;
+  --color-text: #2d1f24;
+  --color-text-muted: rgba(45, 31, 36, 0.7);
+  --shadow-glow: 0 8px 40px rgba(196, 92, 122, 0.12);
+}
+
+.tpl-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem;
+  text-align: center;
+}
+
+/* Love Letter */
+.tpl-letter__for {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--color-rose);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.tpl-letter__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  color: var(--color-cream);
+  margin-bottom: 2.5rem;
+}
+
+.tpl-letter__paper {
+  max-width: 640px;
+  text-align: left;
+  padding: 2.5rem;
+  background: var(--color-bg-card);
+  border: 1px solid rgba(232, 160, 180, 0.2);
+  border-radius: 20px;
+  box-shadow: var(--shadow-glow);
+}
+
+.tpl-letter__greeting {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-style: italic;
+  color: var(--color-rose-light);
+  margin-bottom: 1.5rem;
+}
+
+.tpl-letter__body {
+  color: var(--color-text-muted);
+  line-height: 1.9;
+  margin-bottom: 1rem;
+  font-weight: 300;
+}
+
+.tpl-letter__closing {
+  margin-top: 2rem;
+  text-align: right;
+  font-family: var(--font-display);
+}
+
+.tpl-letter__signature {
+  font-size: 1.4rem;
+  font-style: italic;
+  color: var(--color-cream);
+  margin-top: 0.25rem;
+}
+
+.tpl-letter__sign-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-rose);
+  margin-top: 0.5rem;
+}
+
+/* Love Message */
+.tpl-message__card {
+  max-width: 520px;
+  padding: 3rem 2.5rem;
+  background: var(--color-bg-card);
+  border: 1px solid rgba(232, 160, 180, 0.2);
+  border-radius: 24px;
+  box-shadow: var(--shadow-glow);
+}
+
+.tpl-message__icon { color: var(--color-rose); margin-bottom: 1rem; }
+.tpl-message__to { color: var(--color-rose); font-style: italic; margin-bottom: 0.75rem; }
+.tpl-message__headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  color: var(--color-cream);
+  margin-bottom: 1.25rem;
+}
+.tpl-message__text { color: var(--color-text-muted); line-height: 1.8; margin-bottom: 1rem; }
+.tpl-message__sub { color: var(--color-rose-light); font-style: italic; margin-bottom: 1.5rem; }
+.tpl-message__from { font-family: var(--font-display); color: var(--color-cream); }
+
+/* Marriage Proposal */
+.tpl-proposal { max-width: 700px; margin: 0 auto; }
+.tpl-proposal__for {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--color-rose-light);
+  margin-bottom: 1.5rem;
+}
+.tpl-proposal__intro {
+  color: var(--color-text-muted);
+  line-height: 1.9;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+.tpl-proposal__highlights {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tpl-proposal__highlights li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-bg-card);
+  border-radius: 12px;
+  border: 1px solid rgba(232, 160, 180, 0.15);
+  color: var(--color-text-muted);
+}
+.tpl-proposal__highlights li svg { color: var(--color-rose); flex-shrink: 0; }
+.tpl-proposal__question {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  color: var(--color-cream);
+  margin-bottom: 1rem;
+}
+.tpl-proposal__closing { color: var(--color-text-muted); font-style: italic; margin-bottom: 1rem; }
+.tpl-proposal__from { font-family: var(--font-display); color: var(--color-rose-light); }
+
+/* I Miss You */
+.tpl-miss-you { max-width: 640px; margin: 0 auto; }
+.tpl-miss-you__icon { color: var(--color-rose); margin-bottom: 1rem; }
+.tpl-miss-you__headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  color: var(--color-cream);
+  margin-bottom: 0.5rem;
+}
+.tpl-miss-you__for { color: var(--color-rose); font-style: italic; margin-bottom: 1.5rem; }
+.tpl-miss-you__message {
+  color: var(--color-text-muted);
+  line-height: 1.9;
+  margin-bottom: 2.5rem;
+}
+.tpl-miss-you__subtitle {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--color-cream);
+  margin-bottom: 1.25rem;
+}
+.tpl-miss-you__list {
+  list-style: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+}
+.tpl-miss-you__list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--color-bg-card);
+  border-radius: 10px;
+  color: var(--color-text-muted);
+}
+.tpl-miss-you__list li svg { color: var(--color-rose); flex-shrink: 0; }
+.tpl-miss-you__closing { color: var(--color-rose-light); font-style: italic; margin-bottom: 0.5rem; }
+.tpl-miss-you__from { font-family: var(--font-display); color: var(--color-cream); }
