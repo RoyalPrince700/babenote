@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import songUrl from '../../assets/dotti-forever.mp3'
 import usePrefersReducedMotion from './usePrefersReducedMotion'
@@ -8,34 +8,9 @@ export default function MusicPlayer() {
   const [on, setOn] = useState(false)
   const audioRef = useRef(null)
   const fadeRef = useRef(null)
+  const unlockedRef = useRef(false)
 
-  useEffect(() => {
-    const audio = new Audio(songUrl)
-    audio.loop = true
-    audio.preload = 'auto'
-    audio.volume = 0
-    audioRef.current = audio
-
-    return () => {
-      if (fadeRef.current) window.clearInterval(fadeRef.current)
-      audio.pause()
-      audio.src = ''
-      audioRef.current = null
-    }
-  }, [])
-
-  useEffect(() => {
-    const onDream = (e) => {
-      const audio = audioRef.current
-      if (!audio || !on) return
-      const richer = Boolean(e.detail?.active)
-      fadeVolume(audio, richer ? 0.55 : 0.42, 600)
-    }
-    window.addEventListener('mm-dream-music', onDream)
-    return () => window.removeEventListener('mm-dream-music', onDream)
-  }, [on])
-
-  const fadeVolume = (audio, target, ms = 700) => {
+  const fadeVolume = useCallback((audio, target, ms = 700) => {
     if (fadeRef.current) window.clearInterval(fadeRef.current)
     const start = audio.volume
     const steps = Math.max(8, Math.floor(ms / 40))
@@ -49,29 +24,120 @@ export default function MusicPlayer() {
         fadeRef.current = null
         if (target <= 0.001) {
           audio.pause()
-          audio.currentTime = 0
         }
       }
     }, 40)
-  }
+  }, [])
 
-  const toggle = async () => {
+  const startFromBeginning = useCallback(async () => {
+    if (reduced) return false
+    const audio = audioRef.current
+    if (!audio || unlockedRef.current) return unlockedRef.current
+
+    try {
+      audio.currentTime = 0
+      audio.volume = 0
+      await audio.play()
+      unlockedRef.current = true
+      fadeVolume(audio, 0.42, 900)
+      setOn(true)
+      return true
+    } catch {
+      return false
+    }
+  }, [fadeVolume, reduced])
+
+  useEffect(() => {
+    if (reduced) return undefined
+
+    const audio = new Audio(songUrl)
+    audio.loop = true
+    audio.preload = 'auto'
+    audio.volume = 0
+    audioRef.current = audio
+
+    // Try autoplay as soon as the page loads
+    const tryPlay = () => {
+      startFromBeginning().then((ok) => {
+        if (ok) cleanupGestures()
+      })
+    }
+
+    const cleanupGestures = () => {
+      window.removeEventListener('pointerdown', unlock)
+      window.removeEventListener('touchstart', unlock)
+      window.removeEventListener('keydown', unlock)
+      window.removeEventListener('click', unlock)
+    }
+
+    // Browsers often block autoplay — unlock on first user gesture
+    const unlock = () => {
+      if (unlockedRef.current) return
+      startFromBeginning().then((ok) => {
+        if (ok) cleanupGestures()
+      })
+    }
+
+    if (audio.readyState >= 2) {
+      tryPlay()
+    } else {
+      audio.addEventListener('canplaythrough', tryPlay, { once: true })
+    }
+
+    window.addEventListener('pointerdown', unlock, { passive: true })
+    window.addEventListener('touchstart', unlock, { passive: true })
+    window.addEventListener('keydown', unlock)
+    window.addEventListener('click', unlock)
+
+    return () => {
+      cleanupGestures()
+      audio.removeEventListener('canplaythrough', tryPlay)
+      if (fadeRef.current) window.clearInterval(fadeRef.current)
+      audio.pause()
+      audio.src = ''
+      audioRef.current = null
+      unlockedRef.current = false
+    }
+  }, [reduced, startFromBeginning])
+
+  useEffect(() => {
+    const onDream = (e) => {
+      const audio = audioRef.current
+      if (!audio || !on) return
+      const richer = Boolean(e.detail?.active)
+      fadeVolume(audio, richer ? 0.55 : 0.42, 600)
+    }
+    window.addEventListener('mm-dream-music', onDream)
+    return () => window.removeEventListener('mm-dream-music', onDream)
+  }, [on, fadeVolume])
+
+  const toggle = async (e) => {
+    e?.stopPropagation?.()
     if (reduced) return
     const audio = audioRef.current
     if (!audio) return
 
-    if (!on) {
-      try {
+    if (on && !audio.paused) {
+      // Stop / pause
+      if (fadeRef.current) window.clearInterval(fadeRef.current)
+      fadeRef.current = null
+      audio.pause()
+      setOn(false)
+      return
+    }
+
+    // Play / resume
+    try {
+      if (audio.paused) {
+        if (!unlockedRef.current) audio.currentTime = 0
         audio.volume = 0
         await audio.play()
-        fadeVolume(audio, 0.42, 900)
-        setOn(true)
-      } catch {
-        /* autoplay blocked — user can tap again */
       }
-    } else {
-      fadeVolume(audio, 0, 600)
-      setOn(false)
+      unlockedRef.current = true
+      fadeVolume(audio, 0.42, 500)
+      setOn(true)
+    } catch {
+      /* autoplay blocked — user can tap again */
     }
   }
 
@@ -82,8 +148,9 @@ export default function MusicPlayer() {
       type="button"
       className={`mm-music ${on ? 'mm-music--on' : ''}`}
       onClick={toggle}
+      onPointerDown={(e) => e.stopPropagation()}
       aria-pressed={on}
-      aria-label={on ? 'Mute music' : 'Play Forever Sweet'}
+      aria-label={on ? 'Pause music' : 'Play music'}
       whileTap={{ scale: 0.94 }}
     >
       <span className="mm-music__bars" aria-hidden="true">

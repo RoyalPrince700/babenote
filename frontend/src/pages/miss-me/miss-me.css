@@ -13,7 +13,7 @@
   --mm-font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --mm-font-body: 'Segoe UI', system-ui, sans-serif;
   position: relative;
-  min-height: calc(100vh - 65px);
+  min-height: 100svh;
   background: var(--mm-ink);
   color: var(--mm-cream);
   overflow-x: hidden;
@@ -22,7 +22,7 @@
 
 .mm-stage {
   position: relative;
-  min-height: calc(100vh - 65px);
+  min-height: 100svh;
   z-index: 1;
 }
 
@@ -265,7 +265,7 @@ body.mm-intro-lock {
 .mm-chapter {
   position: relative;
   z-index: 2;
-  min-height: calc(100vh - 65px);
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -546,22 +546,24 @@ body.mm-intro-lock {
 /* ── Music ── */
 .mm-music {
   position: fixed;
-  top: calc(65px + 0.85rem);
+  top: calc(var(--platform-header-h, 65px) + 0.85rem);
   right: 1rem;
-  z-index: 30;
+  z-index: 220;
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
   padding: 0.55rem 0.85rem;
   border-radius: 999px;
   border: 1px solid rgba(232, 160, 180, 0.28);
-  background: rgba(12, 7, 9, 0.65);
+  background: rgba(12, 7, 9, 0.72);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   color: rgba(250, 240, 243, 0.85);
   cursor: pointer;
   font-size: 0.75rem;
   font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .mm-music--on {
@@ -695,7 +697,7 @@ body.mm-intro-lock {
 
   .mm-chapter--hero,
   .mm-chapter--memory {
-    min-height: calc(100svh - 65px);
+    min-height: 100svh;
   }
 
   .mm-chapter--bridge {
@@ -704,8 +706,24 @@ body.mm-intro-lock {
 
   .mm-music {
     top: auto;
-    bottom: 1.1rem;
-    right: 1rem;
+    bottom: calc(1.15rem + env(safe-area-inset-bottom, 0px));
+    right: calc(1rem + env(safe-area-inset-right, 0px));
+    z-index: 220;
+    padding: 0.7rem 0.85rem;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  .mm-music__label {
+    display: none;
+  }
+
+  .mm-music__bars {
+    height: 16px;
+    gap: 3px;
+  }
+
+  .mm-music__bars span {
+    width: 3.5px;
   }
 
   .mm-notes__item {
@@ -756,7 +774,7 @@ body.mm-intro-lock {
 .mm-dream {
   position: relative;
   z-index: 4;
-  min-height: calc(100svh - 65px);
+  min-height: 100svh;
   margin: 0;
   padding: 2.25rem 1.15rem 2.75rem;
   display: flex;
@@ -1322,7 +1340,7 @@ body.mm-intro-lock {
 
 @media (max-width: 768px) {
   .mm-dream {
-    min-height: calc(100svh - 65px);
+    min-height: 100svh;
     padding: 1.75rem 1rem 2.25rem;
   }
 

@@ -5,7 +5,7 @@
 .xp {
   position: relative;
   z-index: 2;
-  min-height: calc(100svh - 65px);
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -979,6 +979,8 @@
   font: inherit;
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   touch-action: none;
 }
 
@@ -1127,7 +1129,7 @@
 .xp--future {
   background: linear-gradient(180deg, #1a1428 0%, #3a2848 45%, #f0c8a0 100%);
   overflow: hidden;
-  min-height: calc(100svh - 65px);
+  min-height: 100svh;
 }
 
 .xp-future__horizon {
@@ -1201,7 +1203,7 @@
 
 @media (max-width: 768px) {
   .xp {
-    min-height: calc(100svh - 65px);
+    min-height: 100svh;
     padding: 2rem 1rem;
   }
 

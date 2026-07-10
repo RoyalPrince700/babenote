@@ -15,6 +15,75 @@
   position: sticky;
   top: 0;
   z-index: 50;
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  will-change: transform;
+}
+
+.platform-header--hidden {
+  transform: translateY(-110%);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Miss Me page — full-bleed immersive experience */
+.platform--miss-me {
+  background: #0c0709;
+  --platform-header-h: 65px;
+}
+
+.platform--miss-me.platform--header-hidden,
+.platform--no-nav {
+  --platform-header-h: 0px;
+}
+
+.platform--miss-me .platform-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(12, 7, 9, 0.82);
+  border-bottom-color: rgba(232, 160, 180, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.platform--miss-me .platform-logo {
+  color: #faf0f3;
+}
+
+.platform--miss-me .platform-nav a {
+  color: rgba(250, 240, 243, 0.78);
+}
+
+.platform--miss-me .platform-nav a:hover {
+  color: #e8a0b4;
+}
+
+/* Keep the single Miss Me link visible in the header on mobile */
+.platform--miss-me .platform-nav {
+  position: static;
+  width: auto;
+  height: auto;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  transform: none;
+  overflow: visible;
+}
+
+.platform--miss-me .platform-nav a {
+  width: auto;
+  padding: 0;
+  border-radius: 0;
+  font-size: 0.95rem;
+}
+
+.platform--miss-me .platform-nav a:hover {
+  background: transparent;
 }
 
 .platform-logo {

@@ -45,7 +45,7 @@ export default function DoYouMissMe() {
 
   return (
     <div className="mm-root">
-      {stage !== STAGES.INTRO && <MusicPlayer />}
+      <MusicPlayer />
       <HeartTrail active={stage !== STAGES.INTRO} />
       <HeartConfetti active={burst} onDone={afterBurst} />
 

@@ -396,15 +396,21 @@ export function ComplimentRainSection() {
   const [drops, setDrops] = useState([])
 
   useEffect(() => {
-    if (!holding || reduced) return undefined
-    const t = window.setInterval(() => {
+    if (!holding) return undefined
+
+    const spawn = () => {
       const id = `${Date.now()}-${Math.random()}`
       const text = COMPLIMENTS[Math.floor(Math.random() * COMPLIMENTS.length)]
       setDrops((prev) => [...prev.slice(-18), { id, text, left: 5 + Math.random() * 85 }])
-      window.setTimeout(() => setDrops((prev) => prev.filter((d) => d.id !== id)), 3200)
-    }, 220)
+      window.setTimeout(() => setDrops((prev) => prev.filter((d) => d.id !== id)), reduced ? 1800 : 3200)
+    }
+
+    spawn()
+    const t = window.setInterval(spawn, reduced ? 480 : 220)
     return () => window.clearInterval(t)
   }, [holding, reduced])
+
+  const endHold = () => setHolding(false)
 
   return (
     <section className="xp xp--rain">
@@ -416,9 +422,9 @@ export function ComplimentRainSection() {
               className="xp-rain__drop"
               style={{ left: `${d.left}%` }}
               initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 280 }}
+              animate={{ opacity: 1, y: reduced ? 160 : 280 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 2.8, ease: 'easeIn' }}
+              transition={{ duration: reduced ? 1.4 : 2.8, ease: 'easeIn' }}
             >
               {d.text}
             </motion.span>
@@ -428,10 +434,13 @@ export function ComplimentRainSection() {
       <motion.button
         type="button"
         className="xp-rain__hold"
-        onPointerDown={() => setHolding(true)}
-        onPointerUp={() => setHolding(false)}
-        onPointerLeave={() => setHolding(false)}
-        onPointerCancel={() => setHolding(false)}
+        onPointerDown={(e) => {
+          e.preventDefault()
+          e.currentTarget.setPointerCapture?.(e.pointerId)
+          setHolding(true)
+        }}
+        onPointerUp={endHold}
+        onPointerCancel={endHold}
         animate={holding ? { scale: 1.06 } : { scale: 1 }}
       >
         {holding ? 'Keep holding…' : 'Hold for compliment rain'}
