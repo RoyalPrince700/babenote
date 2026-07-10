@@ -580,7 +580,12 @@ export function ClosingSection() {
               type="button"
               className="p2-btn p2-btn--link"
               whileTap={{ scale: 0.97 }}
-              onClick={() => navigate('/choosing-you')}
+              onClick={() => {
+                window.scrollTo(0, 0)
+                document.documentElement.scrollTop = 0
+                document.body.scrollTop = 0
+                navigate('/choosing-you')
+              }}
             >
               Continue to chapter three
             </motion.button>

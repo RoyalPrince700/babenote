@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import AmbientBackground from './miss-me/AmbientBackground'
 import FloatingHearts from './miss-me/FloatingHearts'
 import HeartTrail from './miss-me/HeartTrail'
@@ -36,8 +36,10 @@ import './page-two/page-two.css'
 import './page-three/page-three.css'
 
 export default function ChoosingYou() {
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' })
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
   }, [])
 
   return (

@@ -12,12 +12,14 @@ import PlatformLayout from './layouts/PlatformLayout'
 import DoYouMissMe from './pages/DoYouMissMe'
 import StillForYou from './pages/StillForYou'
 import ChoosingYou from './pages/ChoosingYou'
+import ScrollToTop from './components/ScrollToTop'
 import './index.css'
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<PlatformLayout />}>
             {/* Landing page = I Miss You */}
