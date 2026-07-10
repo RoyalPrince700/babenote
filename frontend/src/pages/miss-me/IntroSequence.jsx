@@ -1,0 +1,64 @@
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { INTRO_LINES } from './data'
+import { EASE } from './motion'
+import usePrefersReducedMotion from './usePrefersReducedMotion'
+
+export default function IntroSequence({ onComplete }) {
+  const reduced = usePrefersReducedMotion()
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    if (reduced) {
+      onComplete()
+      return undefined
+    }
+
+    if (index >= INTRO_LINES.length) {
+      const end = window.setTimeout(onComplete, 500)
+      return () => window.clearTimeout(end)
+    }
+
+    const line = INTRO_LINES[index]
+    const t = window.setTimeout(() => setIndex((i) => i + 1), line.duration * 1000)
+    return () => window.clearTimeout(t)
+  }, [index, onComplete, reduced])
+
+  if (reduced) return null
+
+  const current = INTRO_LINES[index]
+
+  return (
+    <motion.div
+      className="mm-intro"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.9, ease: EASE }}
+    >
+      <AnimatePresence mode="wait">
+        {current && (
+          <motion.div
+            key={index}
+            className="mm-intro__stage"
+            initial={{ opacity: 0, y: 12, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -10, filter: 'blur(8px)' }}
+            transition={{ duration: 0.85, ease: EASE }}
+          >
+            {current.type === 'heart' ? (
+              <motion.span
+                className="mm-intro__heart"
+                animate={{ scale: [1, 1.12, 1], opacity: [0.85, 1, 0.85] }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                ❤️
+              </motion.span>
+            ) : (
+              <p className="mm-intro__text">{current.text}</p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}

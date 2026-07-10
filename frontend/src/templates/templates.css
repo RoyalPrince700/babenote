@@ -215,3 +215,52 @@
 .tpl-miss-you__list li svg { color: var(--color-rose); flex-shrink: 0; }
 .tpl-miss-you__closing { color: var(--color-rose-light); font-style: italic; margin-bottom: 0.5rem; }
 .tpl-miss-you__from { font-family: var(--font-display); color: var(--color-cream); }
+
+.tpl-miss-you__moment {
+  margin: 0 auto 2rem;
+  max-width: 420px;
+}
+.tpl-miss-you__moment-frame {
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-rose) 35%, transparent);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+}
+.tpl-miss-you__moment-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.tpl-miss-you__moment-frame--portrait {
+  width: min(200px, 50%);
+  aspect-ratio: 3 / 4;
+}
+.tpl-miss-you__moment-frame--us {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+.tpl-miss-you__moment-frame--follow {
+  margin-top: 1.25rem;
+}
+.tpl-miss-you__moment-caption {
+  margin: 0.85rem auto 0.9rem;
+  max-width: 34ch;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--color-rose-light);
+}
+.tpl-miss-you__moment .tpl-miss-you__message {
+  margin-bottom: 0;
+  text-align: left;
+}
+.tpl-miss-you__moment .tpl-miss-you__closing {
+  margin-top: 1rem;
+}
+
+@media (max-width: 520px) {
+  .tpl-miss-you__moment-frame--portrait { width: min(160px, 48%); }
+}
